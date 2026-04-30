@@ -5,7 +5,7 @@ import {
     getDimensionAverages,
     getHierarchyAverages,
     getGap,
-    getRadarAndGapData // <-- Importa la nueva función
+    getRadarAndGapData
 } from "../utils/calculations";
 
 export const useSurveyData = () => {
@@ -17,12 +17,12 @@ export const useSurveyData = () => {
             setLoading(true);
             const rawData = await parseExcel(file);
 
-            // cálculos
+            //cálculos
             const globalAvg = getGlobalAverage(rawData);
             const dimensions = getDimensionAverages(rawData);
             const hierarchy = getHierarchyAverages(rawData);
             const gap = getGap(hierarchy);
-            const { radarData, gapsPerDimension } = getRadarAndGapData(rawData); // <-- Calcula los nuevos datos
+            const { radarData, gapsPerDimension } = getRadarAndGapData(rawData);
 
             setSurveyData({
                 raw: rawData,
@@ -30,8 +30,8 @@ export const useSurveyData = () => {
                 dimensions,
                 hierarchy,
                 gap,
-                radarData,        // <-- Pásalo al estado
-                gapsPerDimension  // <-- Pásalo al estado
+                radarData,
+                gapsPerDimension
             });
 
         } catch (error) {
