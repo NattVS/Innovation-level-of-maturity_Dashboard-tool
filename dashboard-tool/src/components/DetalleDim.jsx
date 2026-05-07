@@ -6,7 +6,7 @@ const getFullDimName = (dimKey) => {
 };
 
 const getGapDescription = (gap) => {
-    if (gap >= 1.5) return "una crítica desconexión";
+    if (gap >= 1.5) return "una desconexión crítica";
     if (gap >= 1.0) return "una alta falta de alineación";
     if (gap > 0.5) return "una moderada diferencia";
     return "una alineación saludable";

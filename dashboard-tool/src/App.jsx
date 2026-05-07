@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSurveyData } from './hooks/userSurveyData';
 import ResumenGen from './pages/ResumenGen';
+import logo from "../src/assets/Logo_Universidad_Politécnica_de_Madrid.svg.png";
+
 
 function App() {
   const { surveyData, loadExcel } = useSurveyData();
@@ -11,14 +13,14 @@ function App() {
   };
 
   const getMaturityLevel = (avg) => {
-    if (avg <= 0.71) return { level: 1, name: "Reactivo", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
-    if (avg <= 1.43) return { level: 2, name: "Incipiente", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
-    if (avg <= 2.14) return { level: 3, name: "Emergente", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
-    if (avg <= 2.86) return { level: 4, name: "Establecido", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
-    if (avg <= 3.57) return { level: 5, name: "Avanzado", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
-    if (avg <= 4.29) return { level: 6, name: "Sistémico", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
+    if (avg <= 0.71) return { level: 1, name: "Reactivo", desc: "Se reconoce la necesidad de innovar, pero no existen iniciativas formales ni políticas explícitas." };
+    if (avg <= 1.43) return { level: 2, name: "Incipiente", desc: "Existen ideas y propuestas aisladas sin respaldo institucional estructurado." };
+    if (avg <= 2.14) return { level: 3, name: "Emergente", desc: "Pilotos o experimentos pedagógicos puntuales con resultados preliminares. Algunos docentes innovadores sin apoyo sistémico." };
+    if (avg <= 2.86) return { level: 4, name: "Establecido", desc: "Metodologías probadas en asignaturas específicas con evaluación formal y evidencia de aprendizaje." };
+    if (avg <= 3.57) return { level: 5, name: "Avanzado", desc: "Innovación integrada en el currículo con soporte institucional, comunidades de práctica y evidencia de impacto documentada. " };
+    if (avg <= 4.29) return { level: 6, name: "Sistémico", desc: "Prácticas extendidas a múltiples programas con gobernanza, métricas claras y vinculación industria-universidad activa." };
 
-    return { level: 7, name: "Transformador", desc: "CAMBIAME:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." };
+    return { level: 7, name: "Transformador", desc: "Ecosistema maduro: mejora continua basada en evidencia, liderazgo regional e internacional, ciclos de innovación institucionalizados." };
   };
 
   //variables
@@ -43,8 +45,8 @@ function App() {
 
           {/* Logo y Título */}
           <div className="flex flex-col items-center mb-6">
-            <div className="w-24 h-24 bg-gray-200 rounded-full mb-2 flex items-center justify-center">
-              <span className="text-xs text-gray-500">LOGO TEMP</span>
+            <div className="w-24 h-24 mb-2 flex items-center justify-center">
+              <img src={logo} alt="UPC Logo" className="w-24 h-24" />
             </div>
           </div>
 

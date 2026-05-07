@@ -25,7 +25,8 @@ const ResumenGen = ({ surveyData }) => {
     const criticalGapsCount = surveyData.gapsPerDimension.filter(g => g.gap >= 1).length;
     const topGaps = surveyData.gapsPerDimension.filter(g => g.gap > 0).slice(0, 2);
 
-    const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones', 'Análisis'];
+    //FIX-ME agregar pestaña de analisis
+    const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones'];
 
     return (
         <div className="space-y-6">
