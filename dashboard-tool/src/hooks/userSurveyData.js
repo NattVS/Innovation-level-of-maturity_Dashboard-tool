@@ -5,7 +5,8 @@ import {
     getDimensionAverages,
     getHierarchyAverages,
     getGap,
-    getRadarAndGapData
+    getRadarAndGapData,
+    getQualitativeMatrix
 } from "../utils/calculations";
 
 export const useSurveyData = () => {
@@ -15,7 +16,7 @@ export const useSurveyData = () => {
     const loadExcel = async (file) => {
         try {
             setLoading(true);
-            const rawData = await parseExcel(file);
+            const { rawData, rawCualitativos } = await parseExcel(file);
 
             //cálculos
             const globalAvg = getGlobalAverage(rawData);
@@ -23,6 +24,7 @@ export const useSurveyData = () => {
             const hierarchy = getHierarchyAverages(rawData);
             const gap = getGap(hierarchy);
             const { radarData, gapsPerDimension } = getRadarAndGapData(rawData);
+            const qualMatrix = getQualitativeMatrix(rawCualitativos);
 
             setSurveyData({
                 raw: rawData,
@@ -31,7 +33,8 @@ export const useSurveyData = () => {
                 hierarchy,
                 gap,
                 radarData,
-                gapsPerDimension
+                gapsPerDimension,
+                qualMatrix
             });
 
         } catch (error) {

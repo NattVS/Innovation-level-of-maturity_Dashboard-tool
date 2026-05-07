@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 
+
+//FIX-ME:Análiss del promedio al lado de la card,borrar el de abajo analisis cuanti (se cambia arriba y el de arriba original(por persona) se borra)
 const getMaturityLevel = (avg) => {
     if (avg <= 0.71) return { level: 1, name: "Reactivo" };
     if (avg <= 1.43) return { level: 2, name: "Incipiente" };

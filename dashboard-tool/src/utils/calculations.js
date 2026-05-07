@@ -14,7 +14,7 @@ export const getDimensionAverages = (data) => {
     data.forEach(row => {
         Object.keys(row).forEach(key => {
             if (key.startsWith("D")) {
-                const dim = key.split(".")[0]; // D1, D2...
+                const dim = key.split(".")[0];
                 if (!dimensions[dim]) dimensions[dim] = [];
                 dimensions[dim].push(Number(row[key]));
             }
@@ -98,4 +98,43 @@ export const getRadarAndGapData = (data) => {
     })).sort((a, b) => b.gap - a.gap);
 
     return { radarData, gapsPerDimension };
+
+
+};
+
+export const getQualitativeMatrix = (rawCualitativos) => {
+    const matrix = {};
+    if (!rawCualitativos || rawCualitativos.length === 0) return matrix;
+
+    let startRow = -1;
+    for (let i = 0; i < rawCualitativos.length; i++) {
+        if (rawCualitativos[i][0] === "RÚBRICA DE BRECHAS CRÍTICAS ENTRE DIMENSIONES") {
+            startRow = i + 1;
+            break;
+        }
+    }
+
+    if (startRow === -1 || startRow >= rawCualitativos.length) return matrix;
+
+    const headers = rawCualitativos[startRow];
+
+    const colKeys = headers.map(h => (typeof h === 'string' ? h.split(' ')[0] : null));
+
+    for (let i = startRow + 1; i < rawCualitativos.length; i++) {
+        const row = rawCualitativos[i];
+        if (!row || !row[0] || typeof row[0] !== 'string') continue;
+
+        const rowDimKey = row[0].split(' ')[0];
+        if (!rowDimKey.startsWith('D')) continue;
+
+        matrix[rowDimKey] = {};
+
+        for (let j = 1; j < row.length; j++) {
+            const colDimKey = colKeys[j];
+            if (colDimKey && colDimKey.startsWith('D')) {
+                matrix[rowDimKey][colDimKey] = row[j];
+            }
+        }
+    }
+    return matrix;
 };

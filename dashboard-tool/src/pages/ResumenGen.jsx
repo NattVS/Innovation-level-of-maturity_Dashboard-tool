@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import KPIcard from '../components/KPIcard';
 import RadarChartComponent from '../components/RadarChart';
 import DetalleJerarquia from '../components/DetalleJerarquia';
+import Brechas from '../components/DetalleBrechas';
 
 const ResumenGen = ({ surveyData }) => {
     const [activeTab, setActiveTab] = useState('Resumen General');
@@ -27,15 +28,15 @@ const ResumenGen = ({ surveyData }) => {
 
     return (
         <div className="space-y-6">
-            {/*tabs*/}
-            <div className="flex flex-wrap gap-2 mb-8">
+            {/* tabs */}
+            <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-100 pb-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-6 py-2 text-sm font-semibold rounded-md transition-colors ${activeTab === tab
                             ? 'bg-gray-800 text-white shadow-md'
-                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         {tab}
@@ -125,6 +126,10 @@ const ResumenGen = ({ surveyData }) => {
                     nivel={activeTab.replace('Nivel ', '')}
                     surveyData={surveyData}
                 />
+            )}
+            {/*Detalle breshcas */}
+            {activeTab === 'Brechas' && (
+                <Brechas surveyData={surveyData} />
             )}
 
         </div>
