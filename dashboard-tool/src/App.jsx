@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSurveyData } from './hooks/userSurveyData';
 import ResumenGen from './pages/ResumenGen';
-import logo from "../src/assets/Logo_Universidad_Politécnica_de_Madrid.svg.png";
+import logo from "../src/assets/LogoETSIDI.png";
 
 
 function App() {
@@ -45,8 +45,12 @@ function App() {
 
           {/* Logo y Título */}
           <div className="flex flex-col items-center mb-6">
-            <div className="w-24 h-24 mb-2 flex items-center justify-center">
-              <img src={logo} alt="UPC Logo" className="w-24 h-24" />
+            <div className="w-full flex items-center justify-center px-2">
+              <img
+                src={logo}
+                alt="LogoETSIDI"
+                className="w-full h-auto object-contain max-w-[240px]"
+              />
             </div>
           </div>
 
@@ -82,8 +86,8 @@ function App() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-gray-800">Estratégico</p>
-                  <p className="text-[10px] text-gray-500">Rectores · vicerrectores · decanos</p>
+                  <p className="text-[14px] font-bold text-gray-800">Estratégico</p>
+                  <p className="text-[12px] text-gray-500">Rectores · vicerrectores · decanos</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#4c1d95] transition-all duration-500" style={{ width: `${(estScore / 5) * 40}px` }}></div>
@@ -92,8 +96,8 @@ function App() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-gray-800">Táctico</p>
-                  <p className="text-[10px] text-gray-500">Directores · jefes de dpto.</p>
+                  <p className="text-[14px] font-bold text-gray-800">Táctico</p>
+                  <p className="text-[12px] text-gray-500">Directores · jefes de dpto.</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#ca8a04] transition-all duration-500" style={{ width: `${(tacScore / 5) * 40}px` }}></div>
@@ -102,8 +106,8 @@ function App() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-gray-800">Operativo</p>
-                  <p className="text-[10px] text-gray-500">Docentes e investigadores</p>
+                  <p className="text-[14px] font-bold text-gray-800">Operativo</p>
+                  <p className="text-[12px] text-gray-500">Docentes e investigadores</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#dc2626] transition-all duration-500" style={{ width: `${(opeScore / 5) * 40}px` }}></div>

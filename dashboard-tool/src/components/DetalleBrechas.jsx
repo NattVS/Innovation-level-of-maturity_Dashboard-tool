@@ -145,7 +145,7 @@ const Brechas = ({ surveyData }) => {
                         <div className="col-span-4 pl-6">2. Efectos cualitativos sobre otras dimensiones</div>
                     </div>
 
-                    {/* Filas Dinámicas */}
+                    {/* Filas  */}
                     {consolidatedQualAnalysis.length === 0 ? (
                         <div className="p-8 text-center text-gray-400 text-xs border-t border-gray-100">
                             No se encontraron hallazgos cualitativos cruzados en el archivo Excel para las dimensiones seleccionadas.
@@ -160,7 +160,6 @@ const Brechas = ({ surveyData }) => {
                             return (
                                 <div key={idx} className={`grid grid-cols-6 items-stretch ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
 
-                                    {/* Columna Izquierda (Cause Dimension Data - Compacted) */}
                                     <div className="col-span-2 p-4 border-r border-gray-100 flex flex-col gap-3 justify-center">
                                         <div className="flex items-center gap-2">
                                             <div className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${primarySeverity.color}`}>
@@ -169,7 +168,6 @@ const Brechas = ({ surveyData }) => {
                                             <h4 className="font-bold text-gray-900 text-sm">{getFullDimName(entry.primaryKey)}</h4>
                                         </div>
 
-                                        {/* Grid de números pequeños (como imagen 2) */}
                                         <div className="grid grid-cols-3 gap-2 text-center text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
                                             <div className="flex flex-col"><span className="text-[10px] font-medium text-gray-400">EST</span><span className="text-xs font-bold text-[#4c1d95]">{entry.numData.estAvg.toFixed(1)}</span></div>
                                             <div className="flex flex-col"><span className="text-[10px] font-medium text-gray-400">TAC</span><span className="text-xs font-bold text-[#ca8a04]">{entry.numData.tacAvg.toFixed(1)}</span></div>
@@ -177,7 +175,6 @@ const Brechas = ({ surveyData }) => {
                                         </div>
                                     </div>
 
-                                    {/* Columna Derecha */}
                                     <div className="col-span-4 p-5 pl-8">
                                         <h5 className="font-bold text-gray-800 text-xs mb-3 uppercase tracking-wide">Afecta a:</h5>
                                         <ul className="space-y-3.5 list-disc list-outside text-xs text-gray-700 marker:text-blue-500 pl-4">

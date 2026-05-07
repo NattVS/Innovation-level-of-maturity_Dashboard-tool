@@ -6,9 +6,9 @@ const getFullDimName = (dimKey) => {
 };
 
 const getGapDescription = (gap) => {
-    if (gap >= 1.5) return "una desconexión crítica";
-    if (gap >= 1.0) return "una alta falta de alineación";
-    if (gap > 0.5) return "una moderada diferencia";
+    if (gap >= 1.5) return "una brecha crítica en el trabajo desarollado por los miembros de cada una de las jerarquías.";
+    if (gap >= 1.0) return "una falta de alineación entre la visión y misón institucional y las acciones del profesorado tanto en el programa como en el aula.";
+    if (gap > 0.5) return "una leve desvinculación en la transferencia de planes entre los niveles jerárquicos.";
     return "una alineación saludable";
 };
 
