@@ -168,11 +168,6 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                 ))}
             </div>
 
-            {/*análisis cuanti */}
-            <div className="mt-6 border border-gray-200 rounded-xl p-5 bg-white text-sm text-gray-700 shadow-sm leading-relaxed">
-                <b>Análisis clave(CUANTI - CAMBIAR POR REAL):</b> La información refleja ++++ ++++ considerable dentro del nivel {nivel}. El mayor riesgo no es el promedio global ({groupAvg.toFixed(2)}), sino Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
-            </div>
-
         </div>
     );
 };

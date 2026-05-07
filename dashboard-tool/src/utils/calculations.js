@@ -63,7 +63,8 @@ export const getHierarchyAverages = (data) => {
 };
 
 export const getGap = (hierarchy) => {
-    return hierarchy.estratégico - hierarchy.operativo;
+    const valores = [hierarchy.estratégico, hierarchy.táctico, hierarchy.operativo];
+    return Math.max(...valores) - Math.min(...valores);
 };
 
 export const getRadarAndGapData = (data) => {
@@ -90,16 +91,20 @@ export const getRadarAndGapData = (data) => {
         return result;
     });
 
-    const gapsPerDimension = radarData.map(item => ({
-        dim: item.subject,
-        estAvg: item['Estratégico'],
-        opeAvg: item['Operativo'],
-        gap: Number((item['Estratégico'] - item['Operativo']).toFixed(2))
-    })).sort((a, b) => b.gap - a.gap);
+    const gapsPerDimension = radarData.map(item => {
+        const valores = [item['Estratégico'], item['Táctico'], item['Operativo']];
+        const maximaDesconexion = Math.max(...valores) - Math.min(...valores);
+
+        return {
+            dim: item.subject,
+            estAvg: item['Estratégico'],
+            tacAvg: item['Táctico'],
+            opeAvg: item['Operativo'],
+            gap: Number(maximaDesconexion.toFixed(2))
+        };
+    }).sort((a, b) => b.gap - a.gap);
 
     return { radarData, gapsPerDimension };
-
-
 };
 
 export const getQualitativeMatrix = (rawCualitativos) => {

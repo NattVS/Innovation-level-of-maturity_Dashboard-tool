@@ -3,6 +3,7 @@ import KPIcard from '../components/KPIcard';
 import RadarChartComponent from '../components/RadarChart';
 import DetalleJerarquia from '../components/DetalleJerarquia';
 import Brechas from '../components/DetalleBrechas';
+import Dimensiones from '../components/DetalleDim';
 
 const ResumenGen = ({ surveyData }) => {
     const [activeTab, setActiveTab] = useState('Resumen General');
@@ -130,6 +131,11 @@ const ResumenGen = ({ surveyData }) => {
             {/*Detalle breshcas */}
             {activeTab === 'Brechas' && (
                 <Brechas surveyData={surveyData} />
+            )}
+
+            {/*Detalle dimensiones*/}
+            {activeTab === 'Dimensiones' && (
+                <Dimensiones surveyData={surveyData} />
             )}
 
         </div>

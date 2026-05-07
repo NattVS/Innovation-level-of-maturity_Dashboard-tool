@@ -6,11 +6,9 @@ const getGapSeverity = (gap) => {
     if (gap >= 1.5) return { text: "Brecha Crítica", color: "bg-red-100 text-red-800", dot: "bg-red-500" };
     if (gap >= 1.0) return { text: "Brecha Alta", color: "bg-orange-100 text-orange-800", dot: "bg-orange-500" };
     if (gap > 0.5) return { text: "Brecha Media", color: "bg-amber-100 text-amber-800", dot: "bg-amber-500" };
-    // Si la brecha es <= 0.5 (incluso negativa), se considera sana o alineada
     return { text: "Alineado", color: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" };
 };
 
-// Función para obtener el nombre completo de la dimensión
 const getFullDimName = (dimKey) => {
     const names = { D1: 'Estrategia', D2: 'Gobernanza', D3: 'Docente', D4: 'Pedagógico', D5: 'Infraestructura', D6: 'Vinculación', D7: 'Medición', D8: 'Creatividad' };
     return `${dimKey} ${names[dimKey] || ''}`;
@@ -21,43 +19,46 @@ const Brechas = ({ surveyData }) => {
         return <div className="p-8 text-gray-500">Esperando datos válidos...</div>;
     }
 
-    // 1. Preparamos TODAS las dimensiones con sus 3 niveles para la Sección 1
+    const allDimensions = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'];
+
     const allDimensionsData = surveyData.radarData.map(item => {
-        const gap = item['Estratégico'] - item['Operativo'];
+        const valores = [item['Estratégico'], item['Táctico'], item['Operativo']];
+        const gapThreeLevels = Math.max(...valores) - Math.min(...valores);
+
         return {
             dim: item.subject,
             estAvg: item['Estratégico'],
             tacAvg: item['Táctico'],
             opeAvg: item['Operativo'],
-            gap: gap
+            gap: gapThreeLevels
         };
     });
 
-    // 2. Para la Sección 2 (Cualitativa), seguimos tomando las 2 peores dimensiones para cruzarlas
-    const sortedGaps = [...allDimensionsData].sort((a, b) => b.gap - a.gap);
-    const topGapsForQual = sortedGaps.slice(0, 2);
+    let consolidatedQualAnalysis = [];
 
-    let interDimensionalCards = [];
-    if (surveyData.qualMatrix && topGapsForQual.length >= 2) {
-        const dimA = topGapsForQual[0].dim;
-        const dimB = topGapsForQual[1].dim;
+    if (surveyData.qualMatrix) {
+        consolidatedQualAnalysis = allDimensionsData.map(primaryDimData => {
+            const primaryDimKey = primaryDimData.dim;
+            let impacts = [];
 
-        // Verificamos si existe un cruce entre estas dos en la matriz del Excel (Hoja 3)
-        const hallazgo1 = surveyData.qualMatrix[dimA]?.[dimB];
-        const hallazgo2 = surveyData.qualMatrix[dimB]?.[dimA];
+            allDimensions.forEach(targetDimKey => {
+                if (primaryDimKey === targetDimKey) return;
 
-        if (hallazgo1 && hallazgo1 !== 'X') {
-            interDimensionalCards.push({
-                title: `Efecto de ${getFullDimName(dimA)} sobre ${getFullDimName(dimB)}`,
-                text: hallazgo1
+                const hallazgoText = surveyData.qualMatrix[primaryDimKey]?.[targetDimKey];
+                if (hallazgoText && hallazgoText !== 'X') {
+                    impacts.push({
+                        targetDim: targetDimKey,
+                        text: hallazgoText
+                    });
+                }
             });
-        }
-        if (hallazgo2 && hallazgo2 !== 'X') {
-            interDimensionalCards.push({
-                title: `Efecto de ${getFullDimName(dimB)} sobre ${getFullDimName(dimA)}`,
-                text: hallazgo2
-            });
-        }
+
+            return {
+                primaryKey: primaryDimKey,
+                numData: primaryDimData,
+                impacts: impacts
+            };
+        }).filter(item => item.numData.gap >= 1.5);
     }
 
     return (
@@ -65,7 +66,7 @@ const Brechas = ({ surveyData }) => {
             <header>
                 <h1 className="text-2xl font-bold text-gray-800">Sección Brechas</h1>
                 <p className="text-gray-500 mt-1 max-w-3xl">
-                    Análisis detallado de las desconexiones institucionales. Una brecha alta indica tensión entre la visión estratégica y la ejecución operativa, dificultando la consolidación de la innovación.
+                    Análisis detallado de las desconexiones institucionales. Una brecha alta indica tensión o falta de alineación entre jerarquías.
                 </p>
             </header>
 
@@ -79,10 +80,10 @@ const Brechas = ({ surveyData }) => {
                         Cómo leer este gráfico
                     </h3>
                     <div className="space-y-4 text-xs text-gray-700 leading-relaxed">
-                        <p><b className="text-[#4c1d95]">Línea Violeta (Estratégico):</b> Representa la percepción de rectores, decanos y alta dirección. Es la visión y política formal.</p>
-                        <p><b className="text-[#ca8a04]">Línea Amarilla (Táctico):</b> Directores de departamento y jefes. Es la gestión intermedia.</p>
-                        <p><b className="text-[#0f766e]">Línea Verde (Operativo):</b> Docentes e investigadores. Es la ejecución real en el aula y laboratorio.</p>
-                        <p>El área gris sombreada representa el estado consolidado actual. Las brechas ocurren donde las líneas están más separadas.</p>
+                        <p><b className="text-[#4c1d95]">Violeta (Estratégico):</b> Visión institucional formal.</p>
+                        <p><b className="text-[#ea580c]">Naranja (Táctico):</b> Gestión intermedia y de departamentos.</p>
+                        <p><b className="text-[#0f766e]">Verde (Operativo):</b> Ejecución real de docentes.</p>
+                        <p>La brecha neta es la diferencia matemática entre el nivel más alto y el más bajo de los tres.</p>
                     </div>
                 </div>
 
@@ -93,51 +94,36 @@ const Brechas = ({ surveyData }) => {
 
             <hr className="border-gray-100" />
 
-            {/* 1. BRECHAS INTRA-DIMENSIONALES (Muestra TODAS las dimensiones y compara los 3 niveles) */}
+            {/* 1. BRECHAS INTRA-DIMENSIONALES */}
             <section>
                 <div className="mb-6">
                     <h2 className="text-xl font-bold text-gray-800">1. Brechas intra-dimensionales · Entre niveles jerárquicos</h2>
-                    <p className="text-sm text-gray-500 mt-1 max-w-3xl">Comparativa de los tres niveles jerárquicos por dimensión. La brecha neta representa la diferencia entre los 3 niveles jerárquicos.</p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {allDimensionsData.map((data, idx) => {
                         const severity = getGapSeverity(data.gap);
                         return (
-                            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm grid grid-cols-1 lg:grid-cols-6 gap-4 items-center">
-                                {/* Dimensión e Info */}
+                            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm grid grid-cols-1 lg:grid-cols-6 gap-3 items-center">
                                 <div className="lg:col-span-2">
-                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${severity.color}`}>
-                                        <div className={`w-2 h-2 rounded-full ${severity.dot}`}></div>
+                                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${severity.color}`}>
+                                        <div className={`w-1.5 h-1.5 rounded-full ${severity.dot}`}></div>
                                         {severity.text}
                                     </div>
-                                    <h4 className="font-bold text-gray-900 mt-2">{getFullDimName(data.dim)}</h4>
-                                    <p className="text-xs text-gray-500">Promedio global: {surveyData.dimensions[data.dim]?.toFixed(2)}</p>
+                                    <h4 className="font-bold text-gray-900 mt-1.5 text-sm">{getFullDimName(data.dim)}</h4>
                                 </div>
 
-                                {/* Calificaciones de los 3 niveles */}
-                                <div className="flex gap-4 justify-between text-center lg:col-span-3 px-4">
-                                    <div className="flex-1">
-                                        <p className="text-xs text-gray-500 font-medium mb-1">Estratégico</p>
-                                        <p className="text-2xl font-extrabold text-[#4c1d95]">{data.estAvg.toFixed(2)}</p>
-                                    </div>
-                                    <div className="w-px bg-gray-200 my-2"></div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-gray-500 font-medium mb-1">Táctico</p>
-                                        <p className="text-2xl font-extrabold text-[#ca8a04]">{data.tacAvg.toFixed(2)}</p>
-                                    </div>
-                                    <div className="w-px bg-gray-200 my-2"></div>
-                                    <div className="flex-1">
-                                        <p className="text-xs text-gray-500 font-medium mb-1">Operativo</p>
-                                        <p className="text-2xl font-extrabold text-[#0f766e]">{data.opeAvg.toFixed(2)}</p>
-                                    </div>
+                                <div className="flex gap-3 justify-between text-center lg:col-span-3 px-3">
+                                    <div className="flex-1"><p className="text-2xl font-extrabold text-[#4c1d95]">{data.estAvg.toFixed(2)}</p></div>
+                                    <div className="w-px bg-gray-100 my-1"></div>
+                                    <div className="flex-1"><p className="text-2xl font-extrabold text-[#ca8a04]">{data.tacAvg.toFixed(2)}</p></div>
+                                    <div className="w-px bg-gray-100 my-1"></div>
+                                    <div className="flex-1"><p className="text-2xl font-extrabold text-[#0f766e]">{data.opeAvg.toFixed(2)}</p></div>
                                 </div>
 
-                                {/* Brecha Neta */}
-                                <div className="text-center lg:text-right border-t lg:border-t-0 lg:border-l border-gray-100 pt-4 lg:pt-0 lg:pl-4">
-                                    <p className="text-xs text-gray-500 font-medium">Brecha neta</p>
+                                <div className="text-center lg:text-right pt-3 lg:pt-0 lg:pl-3 border-t lg:border-t-0 lg:border-l border-gray-100">
                                     <p className="text-3xl font-black text-gray-900">{data.gap.toFixed(2)}</p>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">puntos</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">pts brecha neta</p>
                                 </div>
                             </div>
                         );
@@ -145,34 +131,67 @@ const Brechas = ({ surveyData }) => {
                 </div>
             </section>
 
-            {/* 2. BRECHAS INTER-DIMENSIONALES (Cualitativas consumidas de la hoja 3) */}
+            {/* 2. MATRIZ LISTADO  */}
             <section>
                 <div className="mb-6">
-                    <h2 className="text-xl font-bold text-gray-800">2. Brechas inter-dimensionales · Análisis de causas raíz</h2>
-                    <p className="text-sm text-gray-500 mt-1 max-w-3xl">Cruce cualitativo que explica cómo la deficiencia en una de las áreas críticas afecta directamente a la otra, formando un cuello de botella.</p>
+                    <h2 className="text-xl font-bold text-gray-800">2. Matriz de Causa Raíz Inter-dimensional </h2>
+                    <p className="text-sm text-gray-500 mt-1 max-w-3xl">Este muestra cómo las deficiencias jerárquicas en una dimensión causa actúan como un cuello de botella, limitando el potencial de otras dimensiones. </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {interDimensionalCards.length === 0 ? (
-                        <div className="col-span-2 bg-[#f8fafc] border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-                            No se encontraron hallazgos cualitativos cruzados en el archivo Excel para las dimensiones críticas.
+                <div className="bg-white border border-gray-100 rounded-2xl shadow-sm text-sm overflow-hidden">
+
+                    <div className="grid grid-cols-6 border-b border-gray-200 bg-[#f8fafc] text-xs font-semibold text-gray-500 uppercase tracking-wider p-4">
+                        <div className="col-span-2">1. Dimensión Causa & Puntajes</div>
+                        <div className="col-span-4 pl-6">2. Efectos cualitativos sobre otras dimensiones</div>
+                    </div>
+
+                    {/* Filas Dinámicas */}
+                    {consolidatedQualAnalysis.length === 0 ? (
+                        <div className="p-8 text-center text-gray-400 text-xs border-t border-gray-100">
+                            No se encontraron hallazgos cualitativos cruzados en el archivo Excel para las dimensiones seleccionadas.
                         </div>
                     ) : (
-                        interDimensionalCards.map((card, idx) => (
-                            <div key={idx} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-                                <h4 className="font-bold text-gray-800 text-base mb-4">{card.title}</h4>
+                        consolidatedQualAnalysis.map((entry, idx) => {
 
-                                <blockquote className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-5 rounded-lg border border-gray-100 italic relative mb-4">
-                                    <span className="text-3xl text-gray-200 absolute -top-1 -left-1">“</span>
-                                    {card.text}
-                                    <span className="text-3xl text-gray-200 absolute -bottom-4 -right-1">”</span>
-                                </blockquote>
+                            if (entry.impacts.length === 0) return null;
 
-                                <div className="mt-auto pt-3 border-t border-gray-100 text-[10px] text-gray-500 flex justify-between items-center uppercase font-bold">
-                                    <span>Extraído de la Matriz Cualitativa Institucional</span>
+                            const primarySeverity = getGapSeverity(entry.numData.gap);
+
+                            return (
+                                <div key={idx} className={`grid grid-cols-6 items-stretch ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
+
+                                    {/* Columna Izquierda (Cause Dimension Data - Compacted) */}
+                                    <div className="col-span-2 p-4 border-r border-gray-100 flex flex-col gap-3 justify-center">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${primarySeverity.color}`}>
+                                                {primarySeverity.text}
+                                            </div>
+                                            <h4 className="font-bold text-gray-900 text-sm">{getFullDimName(entry.primaryKey)}</h4>
+                                        </div>
+
+                                        {/* Grid de números pequeños (como imagen 2) */}
+                                        <div className="grid grid-cols-3 gap-2 text-center text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                            <div className="flex flex-col"><span className="text-[10px] font-medium text-gray-400">EST</span><span className="text-xs font-bold text-[#4c1d95]">{entry.numData.estAvg.toFixed(1)}</span></div>
+                                            <div className="flex flex-col"><span className="text-[10px] font-medium text-gray-400">TAC</span><span className="text-xs font-bold text-[#ca8a04]">{entry.numData.tacAvg.toFixed(1)}</span></div>
+                                            <div className="flex flex-col"><span className="text-[10px] font-medium text-gray-400">OPE</span><span className="text-xs font-bold text-[#0f766e]">{entry.numData.opeAvg.toFixed(1)}</span></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Columna Derecha */}
+                                    <div className="col-span-4 p-5 pl-8">
+                                        <h5 className="font-bold text-gray-800 text-xs mb-3 uppercase tracking-wide">Afecta a:</h5>
+                                        <ul className="space-y-3.5 list-disc list-outside text-xs text-gray-700 marker:text-blue-500 pl-4">
+                                            {entry.impacts.map((impact, i) => (
+                                                <li key={i} className="leading-relaxed">
+                                                    <b>{getFullDimName(impact.targetDim)}:</b> {impact.text}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </section>
