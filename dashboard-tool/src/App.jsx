@@ -16,7 +16,7 @@ function App() {
     if (avg <= 0.71) return { level: 1, name: "Reactivo", desc: "Se reconoce la necesidad de innovar, pero no existen iniciativas formales ni políticas explícitas." };
     if (avg <= 1.43) return { level: 2, name: "Incipiente", desc: "Existen ideas y propuestas aisladas sin respaldo institucional estructurado." };
     if (avg <= 2.14) return { level: 3, name: "Emergente", desc: "Pilotos o experimentos pedagógicos puntuales con resultados preliminares. Algunos docentes innovadores sin apoyo sistémico." };
-    if (avg <= 2.86) return { level: 4, name: "Establecido", desc: "Metodologías probadas en asignaturas específicas con evaluación formal y evidencia de aprendizaje." };
+    if (avg <= 2.86) return { level: 4, name: "Establecido", desc: "Este nivel evidencia que la institución cuenta con metodologías probadas en asignaturas específicas con evaluación formal y evidencia de aprendizaje." };
     if (avg <= 3.57) return { level: 5, name: "Avanzado", desc: "Innovación integrada en el currículo con soporte institucional, comunidades de práctica y evidencia de impacto documentada. " };
     if (avg <= 4.29) return { level: 6, name: "Sistémico", desc: "Prácticas extendidas a múltiples programas con gobernanza, métricas claras y vinculación industria-universidad activa." };
 
@@ -82,12 +82,12 @@ function App() {
 
           {/*jerarquía (3 lvs)*/}
           <div className="mb-6">
-            <h4 className="font-bold text-gray-800 text-sm mb-3">Nivel de madurez por jerarquía</h4>
+            <h4 className="text-[16px] font-bold text-gray-800 text-sm mb-3">Nivel de madurez por grupo jerárquico</h4>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Estratégico</p>
-                  <p className="text-[12px] text-gray-500">Rectores · vicerrectores · decanos</p>
+                  <p className="text-[14px] font-bold text-gray-800">Rector · Director </p>
+                  <p className="text-[12px] text-gray-500">Estratégico</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#4c1d95] transition-all duration-500" style={{ width: `${(estScore / 5) * 40}px` }}></div>
@@ -96,8 +96,8 @@ function App() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Táctico</p>
-                  <p className="text-[12px] text-gray-500">Directores · jefes de dpto.</p>
+                  <p className="text-[14px] font-bold text-gray-800">Subdirectores · Jefes de Dpto.</p>
+                  <p className="text-[12px] text-gray-500">Táctico</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#ca8a04] transition-all duration-500" style={{ width: `${(tacScore / 5) * 40}px` }}></div>
@@ -106,8 +106,8 @@ function App() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Operativo</p>
-                  <p className="text-[12px] text-gray-500">Docentes e investigadores</p>
+                  <p className="text-[14px] font-bold text-gray-800">Docentes · Investigadores</p>
+                  <p className="text-[12px] text-gray-500">Operativo</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1 bg-[#dc2626] transition-all duration-500" style={{ width: `${(opeScore / 5) * 40}px` }}></div>
@@ -131,7 +131,7 @@ function App() {
 
           {/*dimensiones (8)*/}
           <div>
-            <h4 className="font-bold text-gray-800 text-sm mb-3">Nivel Por Dimensión</h4>
+            <h4 className="text-[16px] font-bold text-gray-800 mb-3">Nivel por Dimensión (D)</h4>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(surveyData?.dimensions || {}).map(([key, val]) => (
                 <div key={key} className="border border-gray-200 p-2 rounded-lg bg-[#f8fafc]">

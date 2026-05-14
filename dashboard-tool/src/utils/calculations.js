@@ -91,6 +91,7 @@ export const getRadarAndGapData = (data) => {
         return result;
     });
 
+    //FIX-ME: =@IFS(B22<3;"ALTA"; B22<=4,49;"MEDIO"; B22<=5;"BAJA")
     const gapsPerDimension = radarData.map(item => {
         const valores = [item['Estratégico'], item['Táctico'], item['Operativo']];
         const maximaDesconexion = Math.max(...valores) - Math.min(...valores);
@@ -142,4 +143,55 @@ export const getQualitativeMatrix = (rawCualitativos) => {
         }
     }
     return matrix;
+};
+
+export const getAnalysisData = (rawCualitativos) => {
+    const analysis = { fortalezas: [], debilidades: [] };
+    if (!rawCualitativos || rawCualitativos.length === 0) return analysis;
+
+    let fortalezasIdx = -1;
+    let debilidadesIdx = -1;
+    let rubricaIdx = -1;
+
+    rawCualitativos.forEach((row, i) => {
+        const firstCell = String(row[0] || "").toUpperCase().trim();
+        if (firstCell.includes("FORTALEZAS IDENTIFICADAS")) fortalezasIdx = i;
+        if (firstCell.includes("DEBILIDADES IDENTIFICADAS") || firstCell.includes("DEBIBILIDADES IDENTIFICADAS")) debilidadesIdx = i;
+        if (firstCell.includes("RÚBRICA DE BRECHAS CRÍTICAS")) rubricaIdx = i;
+    });
+
+    const extractItems = (start, end) => {
+        const items = [];
+        for (let i = start + 1; i < end; i++) {
+            const row = rawCualitativos[i];
+
+            if (!row || !row[0]) continue;
+
+            const title = String(row[0]).trim();
+            if (title.toLowerCase() === "título" || title.toLowerCase() === "titulo") continue;
+
+            let info = "";
+            for (let j = 1; j < row.length; j++) {
+                if (row[j] && String(row[j]).trim() !== "") {
+                    info = String(row[j]).trim();
+                    break;
+                }
+            }
+
+            if (title !== "") {
+                items.push({ title, info });
+            }
+        }
+        return items;
+    };
+
+    if (fortalezasIdx !== -1 && debilidadesIdx !== -1) {
+        analysis.fortalezas = extractItems(fortalezasIdx, debilidadesIdx);
+    }
+
+    if (debilidadesIdx !== -1 && rubricaIdx !== -1) {
+        analysis.debilidades = extractItems(debilidadesIdx, rubricaIdx);
+    }
+
+    return analysis;
 };

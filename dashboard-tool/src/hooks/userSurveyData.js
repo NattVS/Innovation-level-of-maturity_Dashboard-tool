@@ -6,7 +6,8 @@ import {
     getHierarchyAverages,
     getGap,
     getRadarAndGapData,
-    getQualitativeMatrix
+    getQualitativeMatrix,
+    getAnalysisData
 } from "../utils/calculations";
 
 export const useSurveyData = () => {
@@ -25,6 +26,7 @@ export const useSurveyData = () => {
             const gap = getGap(hierarchy);
             const { radarData, gapsPerDimension } = getRadarAndGapData(rawData);
             const qualMatrix = getQualitativeMatrix(rawCualitativos);
+            const analysisData = getAnalysisData(rawCualitativos);
 
             setSurveyData({
                 raw: rawData,
@@ -34,7 +36,8 @@ export const useSurveyData = () => {
                 gap,
                 radarData,
                 gapsPerDimension,
-                qualMatrix
+                qualMatrix,
+                analysisData,
             });
 
         } catch (error) {

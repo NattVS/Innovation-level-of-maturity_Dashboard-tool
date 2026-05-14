@@ -4,6 +4,7 @@ import RadarChartComponent from '../components/RadarChart';
 import DetalleJerarquia from '../components/DetalleJerarquia';
 import Brechas from '../components/DetalleBrechas';
 import Dimensiones from '../components/DetalleDim';
+import Analisis from '../components/Analisis';
 
 const ResumenGen = ({ surveyData }) => {
     const [activeTab, setActiveTab] = useState('Resumen General');
@@ -26,7 +27,7 @@ const ResumenGen = ({ surveyData }) => {
     const topGaps = surveyData.gapsPerDimension.filter(g => g.gap > 0).slice(0, 2);
 
     //FIX-ME agregar pestaña de analisis
-    const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones'];
+    const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones', 'Análisis'];
 
     return (
         <div className="space-y-6">
@@ -54,16 +55,17 @@ const ResumenGen = ({ surveyData }) => {
                             subtitle={`Nivel de madurez: ${surveyData.globalAvg <= 0.71 ? 'Reactivo' : surveyData.globalAvg <= 1.43 ? 'Incipiente' : surveyData.globalAvg <= 2.14 ? 'Emergente' : surveyData.globalAvg <= 2.86 ? 'Establecido' : surveyData.globalAvg <= 3.57 ? 'Avanzado' : surveyData.globalAvg <= 4.29 ? 'Sistémico' : 'Transformador'}`}
                             valueColor="text-[#ca8a04]"
                         />
+                        {/*FIX-ME: CAMBIAR LÓGICA (TRAER % CRÍTICO)  */}
                         <KPIcard
-                            title="Brecha Jerárquica"
+                            title="Brecha Jerárquica Crítca"
                             value={surveyData.gap?.toFixed(2) || "0.00"}
                             subtitle="Estratégica vs Operativo"
                             valueColor="text-[#dc2626]"
                         />
                         <KPIcard
-                            title="Encuestados"
+                            title="Total encuestados"
                             value={surveyData.raw?.length || "0"}
-                            subtitle="Total respuestas"
+                            subtitle="Miembros de la institución"
                             valueColor="text-gray-500"
                         />
                         <KPIcard
@@ -75,7 +77,7 @@ const ResumenGen = ({ surveyData }) => {
                     </div>
 
                     <div className="mt-8">
-                        <h3 className="text-xl font-medium text-gray-800 mb-6">Comparación por dimensión y nivel jerárquico</h3>
+                        <h3 className="text-xl font-medium text-gray-800 mb-6">Comparación de promedios por dimensión y grupo jerárquico</h3>
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 max-w-3xl mx-auto">
                             <RadarChartComponent data={surveyData.radarData} />
                         </div>
@@ -139,6 +141,10 @@ const ResumenGen = ({ surveyData }) => {
                 <Dimensiones surveyData={surveyData} />
             )}
 
+            {/*Detalle analisis*/}
+            {activeTab === 'Análisis' && (
+                <Analisis analysisData={surveyData.analysisData} />
+            )}
         </div>
 
     );
