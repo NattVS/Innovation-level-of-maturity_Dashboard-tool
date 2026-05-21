@@ -62,7 +62,7 @@ function App() {
 
           {/*card Nivel Global*/}
           <div className="border border-gray-200 bg-[#f8fafc] p-4 rounded-xl text-center mb-6 shadow-sm">
-            <p className="text-xs font-semibold text-gray-600">Nivel Global Institución</p>
+            <p className="text-xs font-semibold text-gray-600">Nivel de madurez alcanzado</p>
             <p className="text-5xl font-extrabold text-blue-700 my-2">
               {surveyData ? maturity.level : "-"}
             </p>
@@ -82,7 +82,7 @@ function App() {
 
           {/*jerarquía (3 lvs)*/}
           <div className="mb-6">
-            <h4 className="text-[16px] font-bold text-gray-800 text-sm mb-3">Nivel de madurez por grupo jerárquico</h4>
+            <h4 className="text-[16px] font-bold text-gray-800 text-sm mb-3">Nivel de madurez alcanzado por grupo</h4>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -129,19 +129,36 @@ function App() {
             )}
           </div>
 
-          {/*dimensiones (8)*/}
+          {/*dimensiones(8) */}
           <div>
-            <h4 className="text-[16px] font-bold text-gray-800 mb-3">Nivel por Dimensión (D)</h4>
+            <h4 className="text-[16px] font-bold text-gray-800 mb-3">Nivel de madurez alcanzado por dimensión (D)</h4>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(surveyData?.dimensions || {}).map(([key, val]) => (
-                <div key={key} className="border border-gray-200 p-2 rounded-lg bg-[#f8fafc]">
-                  <p className="text-[10px] text-gray-500">{key}</p>
-                  <p className="text-sm font-bold text-gray-800">{val.toFixed(2)}</p>
-                  <p className={`text-[10px] font-semibold ${getTagColor(val)}`}>
-                    {val >= 3 ? "Media" : "Alta"}
-                  </p>
-                </div>
-              ))}
+              {Object.entries(surveyData?.dimensions || {}).map(([key, val]) => {
+
+                const names = {
+                  D1: 'Estrategia',
+                  D2: 'Gobernanza',
+                  D3: 'Docente',
+                  D4: 'Pedagógico',
+                  D5: 'Infraestructura',
+                  D6: 'Vinculación',
+                  D7: 'Medición',
+                  D8: 'Creatividad'
+                };
+                const nombreCompleto = `${key} - ${names[key] || ''}`;
+
+                return (
+                  <div key={key} className="border border-gray-200 p-2 rounded-lg bg-[#f8fafc]">
+                    <p className="text-[10px] text-gray-500 font-medium leading-tight min-h-[24px]">
+                      {nombreCompleto}
+                    </p>
+                    <p className="text-sm font-bold text-gray-800 mt-1">{val.toFixed(2)}</p>
+                    <p className={`text-[10px] font-semibold ${getTagColor(val)}`}>
+                      {val >= 3 ? "Media" : "Alta"}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

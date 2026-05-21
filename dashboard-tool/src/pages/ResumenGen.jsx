@@ -69,9 +69,9 @@ const ResumenGen = ({ surveyData }) => {
                             valueColor="text-gray-500"
                         />
                         <KPIcard
-                            title="Dim. con Brecha Crítica"
+                            title="Dimensiones con Brecha Crítica"
                             value={`${criticalGapsCount}/${Object.keys(surveyData.dimensions).length}`}
-                            subtitle="Brecha > 1.0 pts"
+                            subtitle="Promedio de la dimensión < 3.0 pts"
                             valueColor="text-[#dc2626]"
                         />
                     </div>
@@ -90,14 +90,12 @@ const ResumenGen = ({ surveyData }) => {
                                 <div className="bg-[#fef2f2] border border-[#fca5a5] p-5 rounded-lg">
                                     <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
                                         Dimensión más débil — {weakestDim[0]} ({weakestDim[1].toFixed(2)})
-                                        <span className="w-4 h-4 bg-[#ca8a04] rounded-sm inline-block"></span>
                                     </h4>
                                     <p className="text-sm text-gray-700">Dimensión con el puntaje más bajo a nivel institucional. Requiere prioridad inmediata en el plan de acción.</p>
                                 </div>
                                 <div className="bg-[#f0fdf4] border border-[#86efac] p-5 rounded-lg">
                                     <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
                                         Dimensión más fuerte — {strongestDim[0]} ({strongestDim[1].toFixed(2)})
-                                        <span className="w-4 h-4 bg-[#1e3a8a] rounded-sm inline-block"></span>
                                     </h4>
                                     <p className="text-sm text-gray-700">Principal fortaleza institucional detectada en la enseñanza de la innovación.</p>
                                 </div>

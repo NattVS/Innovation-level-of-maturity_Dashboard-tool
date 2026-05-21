@@ -16,7 +16,22 @@ const RadarChartComponent = ({ data }) => {
                         />
                         {/* Domain fija la escala de 0 a 5 */}
                         <PolarRadiusAxis domain={[0, 5]} tick={false} axisLine={false} />
-                        <Tooltip />
+                        <Tooltip
+                            labelFormatter={(value) => {
+                                const names = {
+                                    D1: 'Estrategia',
+                                    D2: 'Gobernanza',
+                                    D3: 'Docente',
+                                    D4: 'Pedagógico',
+                                    D5: 'Infraestructura',
+                                    D6: 'Vinculación',
+                                    D7: 'Medición',
+                                    D8: 'Creatividad'
+                                };
+                                return `${value} - ${names[value] || ''}`;
+                            }}
+                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        />
                         <Radar name="Estratégico" dataKey="Estratégico" stroke="#4c1d95" fill="none" strokeWidth={2} />
                         <Radar name="Táctico" dataKey="Táctico" stroke="#ea580c" fill="none" strokeWidth={2} />
                         <Radar name="Operativo" dataKey="Operativo" stroke="#0f766e" fill="none" strokeWidth={2} />
