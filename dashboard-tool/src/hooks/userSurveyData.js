@@ -24,7 +24,7 @@ export const useSurveyData = () => {
             const dimensions = getDimensionAverages(rawData);
             const hierarchy = getHierarchyAverages(rawData);
             const gap = getGap(hierarchy);
-            const { radarData, gapsPerDimension } = getRadarAndGapData(rawData);
+            const { radarData, gapsPerDimension } = getRadarAndGapData(rawData, dimensions);
             const qualMatrix = getQualitativeMatrix(rawCualitativos);
             const analysisData = getAnalysisData(rawCualitativos);
 

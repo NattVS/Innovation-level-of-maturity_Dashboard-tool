@@ -8,8 +8,15 @@ function App() {
   const { surveyData, loadExcel } = useSurveyData();
 
   const getTagColor = (val) => {
-    if (val >= 3) return "text-[#ca8a04]";
-    return "text-[#dc2626]";
+    if (val < 3) return "text-[#dc2626]";
+    if (val <= 4.49) return "text-[#ca8a04]";
+    return "text-[#16a34a]";
+  };
+
+  const getTagText = (val) => {
+    if (val < 3) return "Alta";
+    if (val <= 4.49) return "Media";
+    return "Baja";
   };
 
   const getMaturityLevel = (avg) => {
@@ -134,16 +141,9 @@ function App() {
             <h4 className="text-[16px] font-bold text-gray-800 mb-3">Nivel de madurez alcanzado por dimensión (D)</h4>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(surveyData?.dimensions || {}).map(([key, val]) => {
-
                 const names = {
-                  D1: 'Estrategia',
-                  D2: 'Gobernanza',
-                  D3: 'Docente',
-                  D4: 'Pedagógico',
-                  D5: 'Infraestructura',
-                  D6: 'Vinculación',
-                  D7: 'Medición',
-                  D8: 'Creatividad'
+                  D1: 'Estrategia', D2: 'Gobernanza', D3: 'Docente', D4: 'Pedagógico',
+                  D5: 'Infraestructura', D6: 'Vinculación', D7: 'Medición', D8: 'Creatividad'
                 };
                 const nombreCompleto = `${key} - ${names[key] || ''}`;
 
@@ -154,7 +154,7 @@ function App() {
                     </p>
                     <p className="text-sm font-bold text-gray-800 mt-1">{val.toFixed(2)}</p>
                     <p className={`text-[10px] font-semibold ${getTagColor(val)}`}>
-                      {val >= 3 ? "Media" : "Alta"}
+                      {getTagText(val)}
                     </p>
                   </div>
                 );

@@ -67,41 +67,43 @@ export const getGap = (hierarchy) => {
     return Math.max(...valores) - Math.min(...valores);
 };
 
-export const getRadarAndGapData = (data) => {
+export const getRadarAndGapData = (data, dimensionAverages) => {
     const dimensions = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'];
     const hierarchies = ['Estratégico', 'Táctico', 'Operativo'];
 
     const radarData = dimensions.map(dim => {
         let result = { subject: dim };
-
         hierarchies.forEach(h => {
             const hRecords = data.filter(r => r.JERARQUÍA === h);
-
             const values = hRecords.flatMap(r =>
-                Object.keys(r)
-                    .filter(k => k.startsWith(`${dim}.`))
-                    .map(k => Number(r[k]) || 0)
+                Object.keys(r).filter(k => k.startsWith(`${dim}.`)).map(k => Number(r[k]) || 0)
             );
-
-            result[h] = values.length > 0
-                ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2))
-                : 0;
+            result[h] = values.length > 0 ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)) : 0;
         });
-
         return result;
     });
 
-    //FIX-ME: =@IFS(B22<3;"ALTA"; B22<=4,49;"MEDIO"; B22<=5;"BAJA")
     const gapsPerDimension = radarData.map(item => {
         const valores = [item['Estratégico'], item['Táctico'], item['Operativo']];
         const maximaDesconexion = Math.max(...valores) - Math.min(...valores);
+
+        const dimAvg = dimensionAverages ? dimensionAverages[item.subject] : 0;
+
+        let severidadBrecha = "BAJA";
+        if (dimAvg < 3) {
+            severidadBrecha = "ALTA";
+        } else if (dimAvg <= 4.49) {
+            severidadBrecha = "MEDIA";
+        }
 
         return {
             dim: item.subject,
             estAvg: item['Estratégico'],
             tacAvg: item['Táctico'],
             opeAvg: item['Operativo'],
-            gap: Number(maximaDesconexion.toFixed(2))
+            gap: Number(maximaDesconexion.toFixed(2)),
+            dimAvg: dimAvg,
+            severidadBrecha: severidadBrecha
         };
     }).sort((a, b) => b.gap - a.gap);
 

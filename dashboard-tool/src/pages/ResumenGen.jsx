@@ -23,10 +23,9 @@ const ResumenGen = ({ surveyData }) => {
     const weakestDim = dimEntries[dimEntries.length - 1];
 
     //brechas Críticas
-    const criticalGapsCount = surveyData.gapsPerDimension.filter(g => g.gap >= 1).length;
+    const criticalGapsCount = Object.values(surveyData.dimensions).filter(val => val < 3).length;
     const topGaps = surveyData.gapsPerDimension.filter(g => g.gap > 0).slice(0, 2);
 
-    //FIX-ME agregar pestaña de analisis
     const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones', 'Análisis'];
 
     return (
@@ -69,9 +68,9 @@ const ResumenGen = ({ surveyData }) => {
                             valueColor="text-gray-500"
                         />
                         <KPIcard
-                            title="Dimensiones con Brecha Crítica"
+                            title="Dim. con Brecha Crítica"
                             value={`${criticalGapsCount}/${Object.keys(surveyData.dimensions).length}`}
-                            subtitle="Promedio de la dimensión < 3.0 pts"
+                            subtitle="Promedio < 3.0 pts"
                             valueColor="text-[#dc2626]"
                         />
                     </div>
@@ -105,17 +104,43 @@ const ResumenGen = ({ surveyData }) => {
                         <div>
                             <h3 className="text-lg font-bold text-gray-800 mb-4">Brechas</h3>
                             <div className="space-y-4">
-                                {topGaps.map((gapObj, idx) => (
-                                    <div key={idx} className="bg-[#fefce8] border border-[#fde047] p-5 rounded-lg">
-                                        <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
-                                            {gapObj.dim} ({surveyData.dimensions[gapObj.dim].toFixed(2)}) — Brecha {gapObj.gap >= 1 ? 'Alta' : 'Media'}
-                                            <span className="w-4 h-4 bg-[#dc2626] rounded-sm inline-block"></span>
-                                        </h4>
-                                        <p className="text-sm text-gray-700">
-                                            Nivel Operativo: {gapObj.opeAvg.toFixed(2)}/5. Existe una desconexión importante respecto a la visión estratégica ({gapObj.estAvg.toFixed(2)}/5).
-                                        </p>
-                                    </div>
-                                ))}
+                                {topGaps.map((gapObj, idx) => {
+                                    let bgClass = "bg-emerald-50";
+                                    let borderClass = "border-emerald-200";
+                                    let dotClass = "bg-emerald-500";
+
+                                    if (gapObj.severidadBrecha === "ALTA") {
+                                        bgClass = "bg-red-50";
+                                        borderClass = "border-red-200";
+                                        dotClass = "bg-red-600";
+                                    } else if (gapObj.severidadBrecha === "MEDIA") {
+                                        bgClass = "bg-amber-50";
+                                        borderClass = "border-amber-200";
+                                        dotClass = "bg-amber-500";
+                                    }
+
+                                    const levels = [
+                                        { name: 'Estratégico', val: gapObj.estAvg },
+                                        { name: 'Táctico', val: gapObj.tacAvg || 0 },
+                                        { name: 'Operativo', val: gapObj.opeAvg }
+                                    ].sort((a, b) => b.val - a.val);
+
+                                    const highest = levels[0];
+                                    const lowest = levels[levels.length - 1];
+                                    const dimAvg = gapObj.dimAvg || surveyData.dimensions[gapObj.dim];
+
+                                    return (
+                                        <div key={idx} className={`${bgClass} border ${borderClass} p-5 rounded-lg transition-colors`}>
+                                            <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
+                                                {gapObj.dim} ({dimAvg.toFixed(2)}) Estado: {gapObj.severidadBrecha || 'BAJA'}
+                                                <span className={`w-4 h-4 ${dotClass} rounded-sm inline-block`}></span>
+                                            </h4>
+                                            <p className="text-sm text-gray-700">
+                                                Nivel {lowest.name}: {lowest.val.toFixed(2)}/5. Existe una desconexión de <b>{gapObj.gap.toFixed(2)} puntos</b> respecto a la percepción del nivel {highest.name} ({highest.val.toFixed(2)}/5).
+                                            </p>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
