@@ -3,9 +3,7 @@ import RadarChartComponent from '../components/RadarChart';
 
 const getGapSeverity = (gap) => {
     if (gap >= 1.5) return { text: "Brecha Crítica", color: "bg-red-100 text-red-800", dot: "bg-red-500" };
-    if (gap >= 1.0) return { text: "Brecha Alta", color: "bg-orange-100 text-orange-800", dot: "bg-orange-500" };
-    if (gap > 0.5) return { text: "Brecha Media", color: "bg-amber-100 text-amber-800", dot: "bg-amber-500" };
-    return { text: "Alineado", color: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" };
+    return { text: "", color: "white", dot: "white" };
 };
 
 const getFullDimName = (dimKey) => {

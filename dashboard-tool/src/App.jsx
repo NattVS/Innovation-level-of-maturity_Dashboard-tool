@@ -3,7 +3,7 @@ import { useSurveyData } from './hooks/userSurveyData';
 import ResumenGen from './pages/ResumenGen';
 import logo from "../src/assets/LogoETSIDI.png";
 
-
+//FIX-ME poner nivle de prioridad: 
 function App() {
   const { surveyData, loadExcel } = useSurveyData();
 
