@@ -1,13 +1,20 @@
 import * as XLSX from "xlsx";
 
 export const parseExcel = async (file) => {
+    if (!file) throw new Error("No se detectó ningún archivo válido.");
+
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data);
 
     const sheet1Name = workbook.SheetNames[0];
     const sheet1 = workbook.Sheets[sheet1Name];
     if (!sheet1) throw new Error("No se encontró ninguna hoja en el archivo");
-    const rawData = XLSX.utils.sheet_to_json(sheet1);
+
+    const parsedRows = XLSX.utils.sheet_to_json(sheet1);
+
+    const rawData = parsedRows.filter(row => {
+        return row && row['Marca temporal'] && Object.keys(row).length > 2;
+    });
 
     let rawCualitativos = [];
     if (workbook.SheetNames.length >= 3) {

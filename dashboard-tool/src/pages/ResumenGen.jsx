@@ -9,22 +9,22 @@ import Analisis from '../components/Analisis';
 const ResumenGen = ({ surveyData }) => {
     const [activeTab, setActiveTab] = useState('Resumen General');
 
-    if (!surveyData || !surveyData.dimensions) {
+    if (!surveyData || !surveyData.dimensions || Object.keys(surveyData.dimensions).length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] border-2 border-dashed border-gray-300 rounded-2xl text-gray-400">
-                <p>Esperando datos del archivo Excel...</p>
+                <p>Esperando datos cuantitativos del archivo Excel...</p>
+                <p className="text-sm mt-2">El archivo actual parece no tener la estructura de dimensiones esperada.</p>
             </div>
         );
     }
 
-    //dimensiones fuerte y débil
     const dimEntries = Object.entries(surveyData.dimensions).sort((a, b) => b[1] - a[1]);
-    const strongestDim = dimEntries[0];
-    const weakestDim = dimEntries[dimEntries.length - 1];
 
-    //brechas Críticas
+    const strongestDim = dimEntries.length > 0 ? dimEntries[0] : null;
+    const weakestDim = dimEntries.length > 0 ? dimEntries[dimEntries.length - 1] : null;
+
     const criticalGapsCount = Object.values(surveyData.dimensions).filter(val => val < 3).length;
-    const topGaps = surveyData.gapsPerDimension.filter(g => g.gap > 0).slice(0, 2);
+    const topGaps = (surveyData.gapsPerDimension || []).filter(g => g.gap > 0).slice(0, 2);
 
     const tabs = ['Resumen General', 'Brechas', 'Nivel Estratégico', 'Nivel Táctico', 'Nivel Operativo', 'Dimensiones', 'Análisis'];
 
@@ -45,6 +45,7 @@ const ResumenGen = ({ surveyData }) => {
                     </button>
                 ))}
             </div>
+
             {activeTab === 'Resumen General' && (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -75,36 +76,47 @@ const ResumenGen = ({ surveyData }) => {
                         />
                     </div>
 
-                    <div className="mt-8">
-                        <h3 className="text-xl font-medium text-gray-800 mb-6">Comparación de promedios por dimensión y grupo jerárquico</h3>
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 max-w-3xl mx-auto">
-                            <RadarChartComponent data={surveyData.radarData} />
+                    {surveyData.radarData && (
+                        <div className="mt-8">
+                            <h3 className="text-xl font-medium text-gray-800 mb-6">Comparación de promedios por dimensión y grupo jerárquico</h3>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 max-w-3xl mx-auto">
+                                <RadarChartComponent data={surveyData.radarData} />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
                         <div>
                             <h3 className="text-lg font-bold text-gray-800 mb-4">Dimensiones</h3>
                             <div className="space-y-4">
-                                <div className="bg-[#fef2f2] border border-[#fca5a5] p-5 rounded-lg">
-                                    <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
-                                        Dimensión más débil — {weakestDim[0]} ({weakestDim[1].toFixed(2)})
-                                    </h4>
-                                    <p className="text-sm text-gray-700">Dimensión con el puntaje más bajo a nivel institucional. Requiere prioridad inmediata en el plan de acción.</p>
-                                </div>
-                                <div className="bg-[#f0fdf4] border border-[#86efac] p-5 rounded-lg">
-                                    <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
-                                        Dimensión más fuerte — {strongestDim[0]} ({strongestDim[1].toFixed(2)})
-                                    </h4>
-                                    <p className="text-sm text-gray-700">Principal fortaleza institucional detectada en la enseñanza de la innovación.</p>
-                                </div>
+                                {weakestDim && (
+                                    <div className="bg-[#fef2f2] border border-[#fca5a5] p-5 rounded-lg">
+                                        <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
+                                            Dimensión más débil — {weakestDim[0]} ({weakestDim[1].toFixed(2)})
+                                        </h4>
+                                        <p className="text-sm text-gray-700">Dimensión con el puntaje más bajo a nivel institucional. Requiere prioridad inmediata en el plan de acción.</p>
+                                    </div>
+                                )}
+
+                                {strongestDim && (
+                                    <div className="bg-[#f0fdf4] border border-[#86efac] p-5 rounded-lg">
+                                        <h4 className="font-bold text-gray-800 flex items-center gap-2 mb-2">
+                                            Dimensión más fuerte — {strongestDim[0]} ({strongestDim[1].toFixed(2)})
+                                        </h4>
+                                        <p className="text-sm text-gray-700">Principal fortaleza institucional detectada en la enseñanza de la innovación.</p>
+                                    </div>
+                                )}
+
+                                {!weakestDim && !strongestDim && (
+                                    <p className="text-gray-500 italic">No hay suficientes datos de dimensiones para mostrar fortalezas o debilidades.</p>
+                                )}
                             </div>
                         </div>
 
                         <div>
                             <h3 className="text-lg font-bold text-gray-800 mb-4">Brechas</h3>
                             <div className="space-y-4">
-                                {topGaps.map((gapObj, idx) => {
+                                {topGaps.length > 0 ? topGaps.map((gapObj, idx) => {
                                     let bgClass = "bg-emerald-50";
                                     let borderClass = "border-emerald-200";
                                     let dotClass = "bg-emerald-500";
@@ -120,14 +132,14 @@ const ResumenGen = ({ surveyData }) => {
                                     }
 
                                     const levels = [
-                                        { name: 'Estratégico', val: gapObj.estAvg },
+                                        { name: 'Estratégico', val: gapObj.estAvg || 0 },
                                         { name: 'Táctico', val: gapObj.tacAvg || 0 },
-                                        { name: 'Operativo', val: gapObj.opeAvg }
+                                        { name: 'Operativo', val: gapObj.opeAvg || 0 }
                                     ].sort((a, b) => b.val - a.val);
 
                                     const highest = levels[0];
                                     const lowest = levels[levels.length - 1];
-                                    const dimAvg = gapObj.dimAvg || surveyData.dimensions[gapObj.dim];
+                                    const dimAvg = gapObj.dimAvg || surveyData.dimensions[gapObj.dim] || 0;
 
                                     return (
                                         <div key={idx} className={`${bgClass} border ${borderClass} p-5 rounded-lg transition-colors`}>
@@ -136,11 +148,13 @@ const ResumenGen = ({ surveyData }) => {
                                                 <span className={`w-4 h-4 ${dotClass} rounded-sm inline-block`}></span>
                                             </h4>
                                             <p className="text-sm text-gray-700">
-                                                Nivel {lowest.name}: {lowest.val.toFixed(2)}/5. Existe una desconexión de <b>{gapObj.gap.toFixed(2)} puntos</b> respecto a la percepción del nivel {highest.name} ({highest.val.toFixed(2)}/5).
+                                                Nivel {lowest.name}: {lowest.val.toFixed(2)}/5. Existe una desconexión de <b>{gapObj.gap?.toFixed(2) || "0.00"} puntos</b> respecto a la percepción del nivel {highest.name} ({highest.val.toFixed(2)}/5).
                                             </p>
                                         </div>
                                     );
-                                })}
+                                }) : (
+                                    <p className="text-gray-500 italic">No hay brechas críticas registradas para este archivo.</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -154,7 +168,8 @@ const ResumenGen = ({ surveyData }) => {
                     surveyData={surveyData}
                 />
             )}
-            {/*Detalle breshcas */}
+
+            {/*Detalle brechas */}
             {activeTab === 'Brechas' && (
                 <Brechas surveyData={surveyData} />
             )}
@@ -169,7 +184,6 @@ const ResumenGen = ({ surveyData }) => {
                 <Analisis analysisData={surveyData.analysisData} />
             )}
         </div>
-
     );
 };
 
