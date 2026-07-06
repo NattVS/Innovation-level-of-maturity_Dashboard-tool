@@ -100,7 +100,7 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                 {/*1er análisis*/}
                 <div className="flex-1 text-gray-700 text-sm leading-relaxed content-center">
                     El nivel {nivel} lidera la institución con {groupAvg.toFixed(2)}.
-                    <b> Alta varianza interna:</b> {topScorer.role} (IRL {topScorer.maturity.level} · {topScorer.maturity.name}, {topScorer.avg}) representa el techo de excelencia, mientras {bottomScorer.role} (IRL {bottomScorer.maturity.level} · {bottomScorer.maturity.name}, {bottomScorer.avg}) arrastra el promedio y concentra brechas críticas. La brecha interna entre el mejor y el peor perfil es de <b>{variance} puntos</b>.
+                    <b> Alta varianza interna:</b> {topScorer.role} (Nivel Alcanzado {topScorer.maturity.level} · {topScorer.maturity.name}, {topScorer.avg}) representa el techo de excelencia, mientras {bottomScorer.role} (Nivel Alcanzado {bottomScorer.maturity.level} · {bottomScorer.maturity.name}, {bottomScorer.avg}) arrastra el promedio y concentra brechas críticas. La brecha interna entre el mejor y el peor perfil es de <b>{variance} puntos</b>.
                 </div>
             </div>
 
@@ -149,7 +149,7 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                                 className="text-[10px] px-2 py-1 rounded-md font-semibold inline-block"
                                 style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
                             >
-                                IRL {person.maturity.level} · {person.maturity.name}
+                                Nivel Alcanzado {person.maturity.level} · {person.maturity.name}
                             </span>
                         </div>
 

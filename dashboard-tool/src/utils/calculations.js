@@ -67,41 +67,43 @@ export const getGap = (hierarchy) => {
     return Math.max(...valores) - Math.min(...valores);
 };
 
-export const getRadarAndGapData = (data) => {
+export const getRadarAndGapData = (data, dimensionAverages) => {
     const dimensions = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'];
     const hierarchies = ['Estratégico', 'Táctico', 'Operativo'];
 
     const radarData = dimensions.map(dim => {
         let result = { subject: dim };
-
         hierarchies.forEach(h => {
             const hRecords = data.filter(r => r.JERARQUÍA === h);
-
             const values = hRecords.flatMap(r =>
-                Object.keys(r)
-                    .filter(k => k.startsWith(`${dim}.`))
-                    .map(k => Number(r[k]) || 0)
+                Object.keys(r).filter(k => k.startsWith(`${dim}.`)).map(k => Number(r[k]) || 0)
             );
-
-            result[h] = values.length > 0
-                ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2))
-                : 0;
+            result[h] = values.length > 0 ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)) : 0;
         });
-
         return result;
     });
 
-    //FIX-ME: =@IFS(B22<3;"ALTA"; B22<=4,49;"MEDIO"; B22<=5;"BAJA")
     const gapsPerDimension = radarData.map(item => {
         const valores = [item['Estratégico'], item['Táctico'], item['Operativo']];
         const maximaDesconexion = Math.max(...valores) - Math.min(...valores);
+
+        const dimAvg = dimensionAverages ? dimensionAverages[item.subject] : 0;
+
+        let severidadBrecha = "BAJA";
+        if (dimAvg < 3) {
+            severidadBrecha = "ALTA";
+        } else if (dimAvg <= 4.49) {
+            severidadBrecha = "MEDIA";
+        }
 
         return {
             dim: item.subject,
             estAvg: item['Estratégico'],
             tacAvg: item['Táctico'],
             opeAvg: item['Operativo'],
-            gap: Number(maximaDesconexion.toFixed(2))
+            gap: Number(maximaDesconexion.toFixed(2)),
+            dimAvg: dimAvg,
+            severidadBrecha: severidadBrecha
         };
     }).sort((a, b) => b.gap - a.gap);
 
@@ -146,51 +148,112 @@ export const getQualitativeMatrix = (rawCualitativos) => {
 };
 
 export const getAnalysisData = (rawCualitativos) => {
-    const analysis = { fortalezas: [], debilidades: [] };
+    const analysis = {
+        fortalezas: [],
+        debilidades: [],
+        recomendaciones: [],
+        practicas: []
+    };
     if (!rawCualitativos || rawCualitativos.length === 0) return analysis;
 
     let fortalezasIdx = -1;
     let debilidadesIdx = -1;
     let rubricaIdx = -1;
 
+    let recomendacionesIdx = -1;
+    let recomCol = -1;
+
+    let practicasIdx = -1;
+    let practCol = -1;
+
     rawCualitativos.forEach((row, i) => {
-        const firstCell = String(row[0] || "").toUpperCase().trim();
-        if (firstCell.includes("FORTALEZAS IDENTIFICADAS")) fortalezasIdx = i;
-        if (firstCell.includes("DEBILIDADES IDENTIFICADAS") || firstCell.includes("DEBIBILIDADES IDENTIFICADAS")) debilidadesIdx = i;
-        if (firstCell.includes("RÚBRICA DE BRECHAS CRÍTICAS")) rubricaIdx = i;
+        row.forEach((cell, j) => {
+            const cellText = String(cell || "").toUpperCase().trim();
+
+            if (cellText.includes("FORTALEZAS IDENTIFICADAS") && j === 0) {
+                fortalezasIdx = i;
+            }
+            if ((cellText.includes("DEBILIDADES IDENTIFICADAS") || cellText.includes("DEBIBILIDADES IDENTIFICADAS")) && j === 0) {
+                debilidadesIdx = i;
+            }
+            if (cellText.includes("RÚBRICA DE BRECHAS CRÍTICAS")) {
+                rubricaIdx = i;
+            }
+            if (cellText.includes("RECOMENDACIONES - POR HORIZONTE TEMPORAL")) {
+                recomendacionesIdx = i;
+                recomCol = j;
+            }
+            if (cellText.includes("PRÁCTICAS METODOLÓGICAS TRANSFERIBLES")) {
+                practicasIdx = i;
+                practCol = j;
+            }
+        });
     });
-
-    const extractItems = (start, end) => {
+    const extractLeftSection = (start, end) => {
         const items = [];
-        for (let i = start + 1; i < end; i++) {
+        const limit = end !== -1 ? end : rawCualitativos.length;
+        for (let i = start + 1; i < limit; i++) {
             const row = rawCualitativos[i];
-
             if (!row || !row[0]) continue;
 
             const title = String(row[0]).trim();
             if (title.toLowerCase() === "título" || title.toLowerCase() === "titulo") continue;
+            if (title.toUpperCase().includes("DEBILIDADES") || title.toUpperCase().includes("RÚBRICA")) break;
 
             let info = "";
-            for (let j = 1; j < row.length; j++) {
+            const maxCol = recomCol !== -1 ? recomCol : row.length;
+            for (let j = 1; j < maxCol; j++) {
                 if (row[j] && String(row[j]).trim() !== "") {
                     info = String(row[j]).trim();
                     break;
                 }
             }
-
-            if (title !== "") {
-                items.push({ title, info });
-            }
+            if (title !== "") items.push({ title, info });
         }
         return items;
     };
 
-    if (fortalezasIdx !== -1 && debilidadesIdx !== -1) {
-        analysis.fortalezas = extractItems(fortalezasIdx, debilidadesIdx);
+    if (fortalezasIdx !== -1) {
+        analysis.fortalezas = extractLeftSection(fortalezasIdx, debilidadesIdx);
+    }
+    if (debilidadesIdx !== -1) {
+        analysis.debilidades = extractLeftSection(debilidadesIdx, rubricaIdx);
     }
 
-    if (debilidadesIdx !== -1 && rubricaIdx !== -1) {
-        analysis.debilidades = extractItems(debilidadesIdx, rubricaIdx);
+    if (recomendacionesIdx !== -1 && recomCol !== -1) {
+        const limit = practicasIdx !== -1 ? practicasIdx : (rubricaIdx !== -1 ? rubricaIdx : rawCualitativos.length);
+        for (let i = recomendacionesIdx + 2; i < limit; i++) {
+            const row = rawCualitativos[i];
+            if (!row) continue;
+
+            const inmediato = String(row[recomCol] || "").trim();
+            const mediano = String(row[recomCol + 1] || "").trim();
+            const largo = String(row[recomCol + 2] || "").trim();
+
+            if (inmediato.toUpperCase().includes("INMEDIATO") || inmediato.toUpperCase().includes("PRÁCTICA")) continue;
+
+            if (inmediato || mediano || largo) {
+                analysis.recomendaciones.push({ inmediato, mediano, largo });
+            }
+        }
+    }
+
+    if (practicasIdx !== -1 && practCol !== -1) {
+        const limit = rubricaIdx !== -1 ? rubricaIdx : rawCualitativos.length;
+        for (let i = practicasIdx + 2; i < limit; i++) {
+            const row = rawCualitativos[i];
+            if (!row) continue;
+
+            const practica = String(row[practCol] || "").trim();
+            const descripcion = String(row[practCol + 1] || "").trim();
+            const resultados = String(row[practCol + 2] || "").trim();
+
+            if (practica.toUpperCase().includes("PRÁCTICA") || practica.toUpperCase().includes("RÚBRICA")) continue;
+
+            if (practica || descripcion || resultados) {
+                analysis.practicas.push({ practica, descripcion, resultados });
+            }
+        }
     }
 
     return analysis;
