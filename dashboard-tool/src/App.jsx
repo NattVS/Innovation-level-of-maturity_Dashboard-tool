@@ -91,9 +91,10 @@ function App() {
           <div className="mb-6">
             <h4 className="text-[16px] font-bold text-gray-800 text-sm mb-3">Nivel de madurez alcanzado por grupo</h4>
             <div className="space-y-4">
+
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Rector · Director </p>
+                  <p className="text-[14px] font-bold text-gray-800">Dirección - Comité Directivo - Áreas de Apoyo</p>
                   <p className="text-[12px] text-gray-500">Estratégico</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -101,9 +102,10 @@ function App() {
                   <span className="text-xs font-bold text-[#4c1d95]">{estScore.toFixed(2)}</span>
                 </div>
               </div>
+
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Subdirectores · Jefes de Dpto.</p>
+                  <p className="text-[14px] font-bold text-gray-800"> Coordinador de Grado - Director de Departamento</p>
                   <p className="text-[12px] text-gray-500">Táctico</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -111,9 +113,10 @@ function App() {
                   <span className="text-xs font-bold text-[#ca8a04]">{tacScore.toFixed(2)}</span>
                 </div>
               </div>
+
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Docentes · Investigadores</p>
+                  <p className="text-[14px] font-bold text-gray-800">Profesores - Investigadores </p>
                   <p className="text-[12px] text-gray-500">Operativo</p>
                 </div>
                 <div className="flex items-center gap-2">

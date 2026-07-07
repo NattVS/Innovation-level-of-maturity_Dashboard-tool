@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 
-
 //FIX-ME:Análiss del promedio al lado de la card,borrar el de abajo analisis cuanti (se cambia arriba y el de arriba original(por persona) se borra)
 const getMaturityLevel = (avg) => {
     if (avg <= 0.71) return { level: 1, name: "Reactivo" };
@@ -13,6 +12,23 @@ const getMaturityLevel = (avg) => {
     return { level: 7, name: "Transformador" };
 };
 
+const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+        const data = payload[0].payload;
+        const color = payload[0].stroke || '#333';
+
+        return (
+            <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100 max-w-xs">
+                <p className="font-bold text-gray-800 text-[11px] mb-1 leading-tight">{data.role}</p>
+                <p className="text-xs font-semibold" style={{ color: color }}>
+                    Promedio: {data.avg.toFixed(2)}
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
+
 const DetalleJerarquia = ({ nivel, surveyData }) => {
     const levelColors = {
         'Estratégico': '#4E007F',
@@ -22,9 +38,9 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
 
     const primaryColor = levelColors[nivel] || '#475569';
 
-    //DATOS
+    // DATOS
     const levelData = useMemo(() => {
-        //filtro x lvl
+        // filtro x lvl
         const respondents = surveyData.raw.filter(r => r.JERARQUÍA?.toLowerCase() === nivel.toLowerCase());
 
         const processed = respondents.map(r => {
@@ -64,14 +80,19 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
             };
         }).sort((a, b) => b.avg - a.avg);
 
-        return processed;
+        const prefix = nivel.charAt(0).toUpperCase();
+        return processed.map((item, index) => ({
+            ...item,
+            shortLabel: `${prefix}-${index + 1}`
+        }));
+
     }, [nivel, surveyData]);
 
-    //Calculos
+    // Calculos
     const groupAvg = surveyData.hierarchy[nivel.toLowerCase()] || 0;
     const groupMaturity = getMaturityLevel(groupAvg);
 
-    //variables
+    // variables
     const topScorer = levelData[0];
     const bottomScorer = levelData[levelData.length - 1];
     const variance = topScorer && bottomScorer ? (topScorer.avg - bottomScorer.avg).toFixed(2) : 0;
@@ -83,9 +104,9 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
     return (
         <div className="space-y-8 animate-fadeIn">
 
-            {/*HEADER*/}
+            {/* HEADER */}
             <div className="flex flex-col md:flex-row gap-6 items-stretch">
-                {/*promedio y nivel*/}
+                {/* promedio y nivel */}
                 <div
                     className="flex-shrink-0 w-48 rounded-xl border p-4 flex flex-col items-center justify-center text-center bg-white shadow-sm"
                     style={{ borderColor: `${primaryColor}40` }}
@@ -97,29 +118,28 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                     </p>
                 </div>
 
-                {/*1er análisis*/}
+                {/* 1er análisis */}
                 <div className="flex-1 text-gray-700 text-sm leading-relaxed content-center">
                     El nivel {nivel} lidera la institución con {groupAvg.toFixed(2)}.
                     <b> Alta varianza interna:</b> {topScorer.role} (Nivel Alcanzado {topScorer.maturity.level} · {topScorer.maturity.name}, {topScorer.avg}) representa el techo de excelencia, mientras {bottomScorer.role} (Nivel Alcanzado {bottomScorer.maturity.level} · {bottomScorer.maturity.name}, {bottomScorer.avg}) arrastra el promedio y concentra brechas críticas. La brecha interna entre el mejor y el peor perfil es de <b>{variance} puntos</b>.
                 </div>
             </div>
 
-            {/*gráfico */}
+            {/* gráfico */}
             <div className="h-64 w-full mt-6">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={levelData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                         <XAxis
-                            dataKey="id"
-                            tick={{ fontSize: 11, fill: '#64748b' }}
-                            tickFormatter={(value) => value.split('·')[0]}
+                            dataKey="shortLabel"
+                            tick={{ fontSize: 11, fill: '#64748b', fontWeight: 'bold' }}
                             axisLine={false}
                             tickLine={false}
                         />
                         <YAxis domain={[0, 5]} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                         <Tooltip
+                            content={<CustomTooltip />}
                             cursor={{ fill: 'transparent' }}
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                         />
                         <Bar
                             dataKey="avg"
@@ -142,7 +162,10 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                         style={{ borderLeftWidth: '4px', borderLeftColor: primaryColor }}
                     >
                         <div>
-                            <h4 className="font-bold text-gray-900 text-sm">{person.role}</h4>
+                            <h4 className="font-bold text-gray-900 text-sm">
+                                <span style={{ color: primaryColor }} className="mr-1">{person.shortLabel}:</span>
+                                {person.role}
+                            </h4>
                             <p className="text-xs text-gray-500 mb-3">{nivel}</p>
 
                             <span
@@ -151,18 +174,6 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                             >
                                 Nivel Alcanzado {person.maturity.level} · {person.maturity.name}
                             </span>
-                        </div>
-
-                        <div className="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-                            <span className="font-bold">{person.avg} / 5</span>
-                            <span>·</span>
-                            {person.weakDims.length === 0 ? (
-                                <span className="text-gray-500">Sin brechas críticas</span>
-                            ) : (
-                                <span>
-                                    Brechas: <span className="text-red-600 font-bold">{person.weakDims.join(', ')}</span>
-                                </span>
-                            )}
                         </div>
                     </div>
                 ))}
