@@ -7,7 +7,8 @@ import {
     getGap,
     getRadarAndGapData,
     getQualitativeMatrix,
-    getAnalysisData
+    getAnalysisData,
+    getDimensionAnalysis
 } from "../utils/calculations";
 
 export const useSurveyData = () => {
@@ -27,6 +28,7 @@ export const useSurveyData = () => {
             const { radarData, gapsPerDimension } = getRadarAndGapData(rawData, dimensions);
             const qualMatrix = getQualitativeMatrix(rawCualitativos);
             const analysisData = getAnalysisData(rawCualitativos);
+            const dimensionAnalysis = getDimensionAnalysis(rawCualitativos);
 
             setSurveyData({
                 raw: rawData,
@@ -38,6 +40,7 @@ export const useSurveyData = () => {
                 gapsPerDimension,
                 qualMatrix,
                 analysisData,
+                dimensionAnalysis
             });
 
         } catch (error) {
