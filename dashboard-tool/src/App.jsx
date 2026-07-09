@@ -94,7 +94,7 @@ function App() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Dirección - Comité Directivo - Áreas de Apoyo</p>
+                  <p className="text-[12px] font-bold text-gray-800">Dirección - Comité Directivo - Áreas de Apoyo</p>
                   <p className="text-[12px] text-gray-500">Estratégico</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -105,23 +105,23 @@ function App() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800"> Coordinador de Grado - Director de Departamento</p>
+                  <p className="text-[12px] font-bold text-gray-800"> Coordinador de Grado - Director de Departamento</p>
                   <p className="text-[12px] text-gray-500">Táctico</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1 bg-[#ca8a04] transition-all duration-500" style={{ width: `${(tacScore / 5) * 40}px` }}></div>
-                  <span className="text-xs font-bold text-[#ca8a04]">{tacScore.toFixed(2)}</span>
+                  <div className="h-1 bg-[#F37324] transition-all duration-500" style={{ width: `${(tacScore / 5) * 40}px` }}></div>
+                  <span className="text-xs font-bold text-[#F37324]">{tacScore.toFixed(2)}</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[14px] font-bold text-gray-800">Profesores - Investigadores </p>
+                  <p className="text-[12px] font-bold text-gray-800">Profesores - Investigadores </p>
                   <p className="text-[12px] text-gray-500">Operativo</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1 bg-[#dc2626] transition-all duration-500" style={{ width: `${(opeScore / 5) * 40}px` }}></div>
-                  <span className="text-xs font-bold text-[#dc2626]">{opeScore.toFixed(2)}</span>
+                  <div className="h-1 bg-[#19857d] transition-all duration-500" style={{ width: `${(opeScore / 5) * 40}px` }}></div>
+                  <span className="text-xs font-bold text-[#19857d]">{opeScore.toFixed(2)}</span>
                 </div>
               </div>
             </div>

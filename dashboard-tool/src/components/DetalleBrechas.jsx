@@ -113,7 +113,7 @@ const Brechas = ({ surveyData }) => {
                                 <div className="flex gap-3 justify-between text-center lg:col-span-3 px-3">
                                     <div className="flex-1"><p className="text-2xl font-extrabold text-[#4c1d95]">{data.estAvg.toFixed(2)}</p></div>
                                     <div className="w-px bg-gray-100 my-1"></div>
-                                    <div className="flex-1"><p className="text-2xl font-extrabold text-[#ca8a04]">{data.tacAvg.toFixed(2)}</p></div>
+                                    <div className="flex-1"><p className="text-2xl font-extrabold text-[#F37324]">{data.tacAvg.toFixed(2)}</p></div>
                                     <div className="w-px bg-gray-100 my-1"></div>
                                     <div className="flex-1"><p className="text-2xl font-extrabold text-[#0f766e]">{data.opeAvg.toFixed(2)}</p></div>
                                 </div>

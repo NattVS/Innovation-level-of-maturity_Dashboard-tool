@@ -147,6 +147,57 @@ export const getQualitativeMatrix = (rawCualitativos) => {
     return matrix;
 };
 
+export const getDimensionAnalysis = (rawCualitativos) => {
+    const analysisMap = {};
+    if (!rawCualitativos || rawCualitativos.length === 0) return analysisMap;
+
+    const dimNames = [
+        'ESTRATEGIA', 'GOBERNANZA', 'DOCENTE', 'PEDAGÓGICO', 'PEDAGOGICO',
+        'INFRAESTRUCTURA', 'VINCULACIÓN', 'VINCULACION', 'MEDICIÓN', 'MEDICION',
+        'CREATIVIDAD', 'DIMENSIÓN', 'DIMENSION', 'ANÁLISIS', 'ANALISIS'
+    ];
+
+    rawCualitativos.forEach(row => {
+        if (!row || row.length === 0) return;
+
+        for (let colIdx = 0; colIdx < Math.min(row.length, 3); colIdx++) {
+            const cellValue = String(row[colIdx] || "").trim();
+            const match = cellValue.match(/^(D[1-8])/i);
+
+            if (match) {
+                const dimKey = match[1].toUpperCase();
+
+                let longestText = "";
+
+                for (let j = 0; j < row.length; j++) {
+                    if (j === colIdx) continue;
+
+                    const currentCellText = String(row[j] || "").trim();
+                    if (!currentCellText) continue;
+
+                    const upperCellText = currentCellText.toUpperCase();
+
+                    const isJustAName = dimNames.some(name =>
+                        upperCellText === name ||
+                        upperCellText.includes(`- ${name}`) ||
+                        upperCellText === `${dimKey} - ${name}`
+                    );
+                    if (!isJustAName && currentCellText.length > longestText.length) {
+                        longestText = currentCellText;
+                    }
+                }
+
+                if (longestText) {
+                    analysisMap[dimKey] = longestText;
+                }
+                break;
+            }
+        }
+    });
+
+    return analysisMap;
+};
+
 export const getAnalysisData = (rawCualitativos) => {
     const analysis = {
         fortalezas: [],
@@ -189,6 +240,7 @@ export const getAnalysisData = (rawCualitativos) => {
             }
         });
     });
+
     const extractLeftSection = (start, end) => {
         const items = [];
         const limit = end !== -1 ? end : rawCualitativos.length;
