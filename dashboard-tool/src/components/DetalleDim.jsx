@@ -74,7 +74,6 @@ const Dimensiones = ({ surveyData }) => {
                             <div className="flex-1 flex flex-col justify-center gap-3.5 px-2 w-full">
                                 {/* Barra Estratégico */}
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-bold text-gray-400 w-8">EST</span>
                                     <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-700 ease-out"
@@ -85,7 +84,6 @@ const Dimensiones = ({ surveyData }) => {
 
                                 {/* Barra Táctico */}
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-bold text-gray-400 w-8">TAC</span>
                                     <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-700 ease-out delay-75"
@@ -96,7 +94,6 @@ const Dimensiones = ({ surveyData }) => {
 
                                 {/* Barra Operativo */}
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-bold text-gray-400 w-8">OPE</span>
                                     <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-700 ease-out delay-150"
