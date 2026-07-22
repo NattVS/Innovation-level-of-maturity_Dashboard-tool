@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-//FIX-ME:Análiss del promedio al lado de la card,borrar el de abajo analisis cuanti (se cambia arriba y el de arriba original(por persona) se borra)
 const getMaturityLevel = (avg) => {
     if (avg <= 0.71) return { level: 1, name: "Reactivo" };
     if (avg <= 1.43) return { level: 2, name: "Incipiente" };
@@ -91,11 +90,8 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
     // Calculos
     const groupAvg = surveyData.hierarchy[nivel.toLowerCase()] || 0;
     const groupMaturity = getMaturityLevel(groupAvg);
-
-    // variables
-    const topScorer = levelData[0];
-    const bottomScorer = levelData[levelData.length - 1];
-    const variance = topScorer && bottomScorer ? (topScorer.avg - bottomScorer.avg).toFixed(2) : 0;
+    const normalizedNivel = nivel.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const textoAnalisisJerarquia = surveyData.jerarquiaAnalysis?.[normalizedNivel];
 
     if (levelData.length === 0) {
         return <div className="p-8 text-center text-gray-500">No hay datos para el nivel {nivel} en este archivo.</div>;
@@ -119,9 +115,14 @@ const DetalleJerarquia = ({ nivel, surveyData }) => {
                 </div>
 
                 {/* 1er análisis */}
-                <div className="flex-1 text-gray-700 text-sm leading-relaxed content-center">
-                    El nivel {nivel} lidera la institución con {groupAvg.toFixed(2)}.
-                    <b> Alta varianza interna:</b> {topScorer.role} (Nivel Alcanzado {topScorer.maturity.level} · {topScorer.maturity.name}, {topScorer.avg}) representa el techo de excelencia, mientras {bottomScorer.role} (Nivel Alcanzado {bottomScorer.maturity.level} · {bottomScorer.maturity.name}, {bottomScorer.avg}) arrastra el promedio y concentra brechas críticas. La brecha interna entre el mejor y el peor perfil es de <b>{variance} puntos</b>.
+                <div className="flex-1 text-gray-700 text-sm leading-relaxed content-center bg-slate-50 border border-slate-100 rounded-xl p-5 shadow-sm">
+                    {textoAnalisisJerarquia ? (
+                        textoAnalisisJerarquia
+                    ) : (
+                        <span className="text-gray-400 italic">
+                            No se registran observaciones cualitativas para el nivel {nivel} en el archivo actual.
+                        </span>
+                    )}
                 </div>
             </div>
 

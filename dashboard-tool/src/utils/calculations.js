@@ -198,6 +198,70 @@ export const getDimensionAnalysis = (rawCualitativos) => {
     return analysisMap;
 };
 
+export const getJerarquiaAnalysis = (rawCualitativos) => {
+    const analysisMap = {};
+    if (!rawCualitativos || rawCualitativos.length === 0) return analysisMap;
+
+    let targetRow = -1;
+    let targetCol = -1;
+
+    for (let i = 0; i < rawCualitativos.length; i++) {
+        const row = rawCualitativos[i];
+        if (!row) continue;
+
+        for (let j = 0; j < row.length; j++) {
+            const cellText = String(row[j] || "").trim().toUpperCase();
+            if (cellText.includes("ANÁLISIS POR NIVEL JERÁRQUICO") ||
+                cellText.includes("ANALISIS POR NIVEL JERARQUICO") ||
+                cellText.includes("NIVEL JERÁQUICO") ||
+                cellText.includes("NIVEL JERARQUICO")) {
+                targetRow = i;
+                targetCol = j;
+                break;
+            }
+        }
+        if (targetRow !== -1) break;
+    }
+
+    if (targetRow === -1) return analysisMap;
+
+    for (let i = targetRow + 1; i < rawCualitativos.length; i++) {
+        const row = rawCualitativos[i];
+        if (!row) continue;
+
+        if (Object.keys(analysisMap).length === 3) {
+            break;
+        }
+
+        for (let j = Math.max(0, targetCol - 2); j <= Math.min(row.length - 1, targetCol + 2); j++) {
+            const cellText = String(row[j] || "").trim();
+            if (!cellText) continue;
+
+            const cleanUpperText = cellText.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (cleanUpperText === 'ESTRATEGICO' || cleanUpperText === 'TACTICO' || cleanUpperText === 'OPERATIVO') {
+                const key = cleanUpperText.toLowerCase();
+                let foundText = "";
+
+                for (let k = j + 1; k < row.length; k++) {
+                    const potentialText = String(row[k] || "").trim();
+                    if (potentialText) {
+                        foundText = potentialText;
+                        break;
+                    }
+                }
+
+                if (foundText && !analysisMap[key]) {
+                    analysisMap[key] = foundText;
+                }
+                break;
+            }
+        }
+    }
+
+    return analysisMap;
+};
+
 export const getAnalysisData = (rawCualitativos) => {
     const analysis = {
         fortalezas: [],
